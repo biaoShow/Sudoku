@@ -9,6 +9,8 @@ import android.text.Editable;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -39,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         //禁止系统输入法拉起
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         et_input.setShowSoftInputOnFocus(false);
-        et_input.setCustomSelectionActionModeCallback(new ActionModeCallbackInterceptor());//禁止复制/剪切
+        et_input.setOnTouchListener(new onDoubleClick());//屏蔽双击时候选择输入全部内容
+//        et_input.setCustomSelectionActionModeCallback(new ActionModeCallbackInterceptor());//禁止复制/剪切
 
         rVadapter = new RVadapter(this);
         rVadapter.setOnClickItem(new RVadapter.OnClickItem() {
@@ -133,6 +136,27 @@ public class MainActivity extends AppCompatActivity {
 
 
         public void onDestroyActionMode(ActionMode mode) {
+        }
+    }
+
+    class onDoubleClick implements View.OnTouchListener {
+        int count = 0;
+        int firClick = 0;
+        int secClick = 0;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            final float x = event.getX();
+            final float y = event.getY();
+
+            if (MotionEvent.ACTION_DOWN == event.getAction()) {
+
+                int temp = et_input.getOffsetForPosition(x, y);
+                et_input.setSelection(temp);
+            }
+
+
+            return true;
         }
     }
 }
